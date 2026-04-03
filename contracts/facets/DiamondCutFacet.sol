@@ -6,8 +6,9 @@ pragma solidity ^0.8.0;
 * EIP-2535 Diamonds: https://eips.ethereum.org/EIPS/eip-2535
 /******************************************************************************/
 
-import { IDiamondCut } from "../interfaces/IDiamondCut.sol";
-import { LibDiamond } from "../libraries/LibDiamond.sol";
+import {IDiamondCut} from "../interfaces/IDiamondCut.sol";
+import {LibDiamond} from "../libraries/LibDiamond.sol";
+import {LibAppStorage} from "../libraries/LibAppStorage.sol";
 
 contract DiamondCutFacet is IDiamondCut {
     /// @notice Add/replace/remove any number of functions and optionally execute
@@ -16,12 +17,15 @@ contract DiamondCutFacet is IDiamondCut {
     /// @param _init The address of the contract or facet to execute _calldata
     /// @param _calldata A function call, including function selector and arguments
     ///                  _calldata is executed with delegatecall on _init
-    function diamondCut(
-        FacetCut[] calldata _diamondCut,
-        address _init,
-        bytes calldata _calldata
-    ) external override {
-        LibDiamond.enforceIsContractOwner();
+    function diamondCut(FacetCut[] calldata _diamondCut, address _init, bytes calldata _calldata) external override {
+        // Route to the right gate depending on whether multisig is live.
+        if (LibAppStorage.multisigEnabled()) {
+            // Multisig is active — only a self-call from execute() is valid.
+            require(msg.sender == address(this), "Only multisig");
+        } else {
+            // Bootstrap phase — owner controls upgrades directly.
+            LibDiamond.enforceIsContractOwner();
+        }
         LibDiamond.diamondCut(_diamondCut, _init, _calldata);
     }
 }

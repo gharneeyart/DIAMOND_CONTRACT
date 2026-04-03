@@ -1,0 +1,21 @@
+ // function safeTransferFrom(address from, address to, uint256 tokenId, bytes calldata data) public override {
+    //     _safeTransfer(from, to, tokenId, data);
+    // }
+
+    // function safeTransferFrom(address from, address to, uint256 tokenId) public override {
+    //     _safeTransfer(from, to, tokenId, "");
+    // }
+
+    // function _safeTransfer(address from, address to, uint256 tokenId, bytes memory data) internal {
+    //     transferFrom(from, to, tokenId);
+
+    //     if (to.code.length > 0) {
+    //         try IERC721Receiver(to).onERC721Received(msg.sender, from, tokenId, data) returns (bytes4 retval) {
+    //             require(retval == IERC721Receiver.onERC721Received.selector, "Unsafe recipient");
+    //         } catch {
+    //             revert("Unsafe recipient");
+    //         }
+    //     }
+    // }
+
+    // import {IERC721Receiver} from "../../lib/openzeppelin-contracts/contracts/token/ERC721/IERC721Receiver.sol";

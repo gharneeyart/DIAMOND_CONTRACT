@@ -7,9 +7,7 @@ import "solidity-stringutils/strings.sol";
 abstract contract DiamondUtils is Test {
     using strings for *;
 
-    function generateSelectors(
-        string memory _facetName
-    ) internal returns (bytes4[] memory selectors) {
+    function generateSelectors(string memory _facetName) internal returns (bytes4[] memory selectors) {
         // get JSON string of contract methods
         string[] memory cmd = new string[](5);
         cmd[0] = "forge";
@@ -30,7 +28,7 @@ abstract contract DiamondUtils is Test {
         strings.slice memory dbquote = '"'.toSlice();
         selectors = new bytes4[]((s.count(colon)));
 
-        for (uint i = 0; i < selectors.length; i++) {
+        for (uint256 i = 0; i < selectors.length; i++) {
             s.split(dbquote); // advance to next doublequote
             // split at colon, extract string up to next doublequote for methodname
             strings.slice memory method = s.split(colon).until(dbquote);

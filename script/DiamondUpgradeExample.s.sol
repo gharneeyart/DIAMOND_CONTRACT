@@ -27,24 +27,21 @@ contract DiamondUpgradeExample is Script, DiamondUpgradeHelper {
         bytes memory initCalldata = hex"";
 
         // Build cuts
-        IDiamondCut.FacetCut[] memory addCuts = buildAddCutsByNames(
-            addFacetAddresses,
-            addFacetNames
-        );
-        IDiamondCut.FacetCut[] memory repCuts = buildReplaceCutsByNames(
-            IDiamondLoupe(diamond),
-            replaceFacetAddresses,
-            replaceFacetNames
-        );
+        IDiamondCut.FacetCut[] memory addCuts = buildAddCutsByNames(addFacetAddresses, addFacetNames);
+        IDiamondCut.FacetCut[] memory repCuts =
+            buildReplaceCutsByNames(IDiamondLoupe(diamond), replaceFacetAddresses, replaceFacetNames);
         uint256 extra = removeSelectors.length > 0 ? 1 : 0;
-        IDiamondCut.FacetCut[] memory cuts = new IDiamondCut.FacetCut[](
-            addCuts.length + repCuts.length + extra
-        );
+        IDiamondCut.FacetCut[] memory cuts = new IDiamondCut.FacetCut[](addCuts.length + repCuts.length + extra);
         uint256 k = 0;
-        for (uint256 i = 0; i < addCuts.length; i++) cuts[k++] = addCuts[i];
-        for (uint256 j = 0; j < repCuts.length; j++) cuts[k++] = repCuts[j];
-        if (removeSelectors.length > 0)
+        for (uint256 i = 0; i < addCuts.length; i++) {
+            cuts[k++] = addCuts[i];
+        }
+        for (uint256 j = 0; j < repCuts.length; j++) {
+            cuts[k++] = repCuts[j];
+        }
+        if (removeSelectors.length > 0) {
             cuts[k++] = buildRemoveCut(removeSelectors);
+        }
 
         // Execute
         vm.startBroadcast();
@@ -52,5 +49,4 @@ contract DiamondUpgradeExample is Script, DiamondUpgradeHelper {
         vm.stopBroadcast();
     }
 }
-
 
