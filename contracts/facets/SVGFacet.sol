@@ -11,7 +11,6 @@ contract SVGFacet {
 
     AppStorage internal s;
 
-    // ── Trait derivation ──────────────────────────────────────────────────────
     // All traits are derived deterministically from tokenId.
     // No randomness, no oracle, no storage — just integer math.
     // The same token always produces the same image.
@@ -191,6 +190,16 @@ contract SVGFacet {
         // Face bg is slightly lighter than card bg — derived by convention
         string memory faceBg = "#0a0a20";
 
+        string memory part1 = _buildSVGPart1(bg, accent);
+        string memory circuits = _buildCircuits(tokenId, accent);
+        string memory part2 = _buildSVGPart2(accent);
+        string memory part3 = _buildSVGPart3(faceBg, accent, eyeColor, tokenId);
+        string memory part4 = _buildSVGPart4(accent, tokenId, nftName);
+
+        return string.concat(part1, circuits, part2, part3, part4);
+    }
+
+    function _buildSVGPart1(string memory bg, string memory accent) internal pure returns (string memory) {
         return string.concat(
             "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 680 680'>",
             // Card background
@@ -218,9 +227,25 @@ contract SVGFacet {
             "<polyline points='600,40 640,40 640,80'/>",
             "<polyline points='640,600 640,640 600,640'/>",
             "<polyline points='80,640 40,640 40,600'/>",
-            "</g>",
-            // Circuit traces (layout varies per token)
-            _buildCircuits(tokenId, accent),
+            "</g>"
+        );
+    }
+
+    function _buildSVGPart2(string memory accent) internal pure returns (string memory) {
+        return string.concat(
+            // Outer border
+            "<rect x='40' y='40' width='600' height='600' rx='8' fill='none' stroke='",
+            accent,
+            "' stroke-width='1' opacity='0.5'/>"
+        );
+    }
+
+    function _buildSVGPart3(string memory faceBg, string memory accent, string memory eyeColor, uint256 tokenId)
+        internal
+        pure
+        returns (string memory)
+    {
+        return string.concat(
             // Face
             "<ellipse cx='340' cy='300' rx='110' ry='130' fill='",
             faceBg,
@@ -243,7 +268,16 @@ contract SVGFacet {
             accent,
             "' stroke-width='1' opacity='0.4'/>",
             // Mouth (count varies per token)
-            _buildMouth(tokenId, accent),
+            _buildMouth(tokenId, accent)
+        );
+    }
+
+    function _buildSVGPart4(string memory accent, uint256 tokenId, string memory nftName)
+        internal
+        pure
+        returns (string memory)
+    {
+        return string.concat(
             // Token name badge
             "<rect x='270' y='56' width='140' height='26' rx='4' fill='none' stroke='",
             accent,
@@ -254,9 +288,7 @@ contract SVGFacet {
             nftName,
             "</text>",
             // HUD bottom bar
-            "<rect x='40' y='610' width='600' height='30' fill='",
-            bg,
-            "'/>",
+            "<rect x='40' y='610' width='600' height='30' fill='#000000'/>",
             "<rect x='40' y='610' width='600' height='1' fill='",
             accent,
             "' opacity='0.4'/>",
@@ -267,10 +299,6 @@ contract SVGFacet {
             "  ID: #",
             tokenId.toString(),
             "</text>",
-            // Outer border
-            "<rect x='40' y='40' width='600' height='600' rx='8' fill='none' stroke='",
-            accent,
-            "' stroke-width='1' opacity='0.5'/>",
             "</svg>"
         );
     }

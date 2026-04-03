@@ -12,7 +12,7 @@ abstract contract DiamondUtils is Test {
         string[] memory cmd = new string[](5);
         cmd[0] = "forge";
         cmd[1] = "inspect";
-        cmd[2] = _facetName;
+        cmd[2] = string(abi.encodePacked("contracts/facets/", _facetName, ".sol:", _facetName));
         cmd[3] = "methods";
         cmd[4] = "--json";
         bytes memory res = vm.ffi(cmd);

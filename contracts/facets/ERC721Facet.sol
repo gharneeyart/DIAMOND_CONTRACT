@@ -19,7 +19,7 @@ contract ERC721Facet is IERC721 {
     event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
 
     function init(string memory _name, string memory _symbol) external {
-        LibAppStorage.enforceMultisig();
+        LibAppStorage.enforceOwner();
         require(bytes(s.name).length == 0, "Already initialized");
         require(bytes(s.symbol).length == 0, "Already initialized");
         s.name = _name;
@@ -85,5 +85,9 @@ contract ERC721Facet is IERC721 {
         s.owners[tokenId] = _to;
         s.balances[_to] += 1;
         emit Transfer(address(0), _to, tokenId);
+    }
+
+    function currentTokenId() external view returns (uint256) {
+        return s.currentTokenId;
     }
 }
